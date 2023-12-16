@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "RPGPlayerController.generated.h"
 
+class UCombatComponent;
 struct FInputActionValue;
 class UInputMappingContext;
 class UInputAction;
@@ -20,8 +21,8 @@ class RPG_API ARPGPlayerController : public APlayerController
 public:
 
 	ARPGPlayerController();
-	
-	virtual void PlayerTick(float DeltaTime) override;
+	virtual void Tick(float DeltaSeconds) override;
+
 
 protected:
 
@@ -54,8 +55,5 @@ private:
 	void StopJumping(const FInputActionValue& Value);
 	void Crouch(const FInputActionValue& Value);
 	void Interact(const FInputActionValue& Value);
-
-	
-	
 	
 };

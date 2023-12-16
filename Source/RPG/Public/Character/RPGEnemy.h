@@ -22,10 +22,6 @@ public:
 	
 	virtual void PossessedBy(AController* NewController) override;
 
-	/*
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly);
-	TObjectPtr<UWidgetComponent> HealthBar;*/
-	
 protected:
 
 	virtual void BeginPlay() override;

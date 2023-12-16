@@ -4,7 +4,7 @@
 #include "Character/RPGCharacterBase.h"
 
 #include "Components/CapsuleComponent.h"
-#include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ARPGCharacterBase::ARPGCharacterBase()
@@ -17,12 +17,37 @@ ARPGCharacterBase::ARPGCharacterBase()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
 	GetMesh()->SetGenerateOverlapEvents(true);
 
-	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon");
-	Weapon->SetupAttachment(GetMesh(),FName("WeaponHandSocket"));
-	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("WeaponMesh");
+	WeaponMesh->SetupAttachment(GetMesh(),FName("WeaponHandSocket"));
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 }
 
+void ARPGCharacterBase::OpenLobby()
+{
+	UWorld* World = GetWorld();
+	if(World)
+	{
+		World->ServerTravel("/Game/Blueprints/Map/Lobby?listen");
+	}
+	
+}
+
+void ARPGCharacterBase::CallOpenLevel(const FString& Address)
+{
+	UGameplayStatics::OpenLevel(this,*Address);
+	
+	
+}
+
+void ARPGCharacterBase::CallClientTravel(const FString& Address)
+{
+	APlayerController* PlayerController = GetGameInstance()->GetFirstLocalPlayerController();
+	if(PlayerController)
+	{
+		PlayerController->ClientTravel(Address,TRAVEL_Absolute);
+	}
+}
 void ARPGCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

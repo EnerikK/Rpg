@@ -2,27 +2,26 @@
 
 
 #include "Player/RPGPlayerController.h"
-
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Components/CombatComponent.h"
 #include "GameFramework/Character.h"
+
 
 ARPGPlayerController::ARPGPlayerController()
 {
 	bReplicates = true;
-	
+
 }
 
-void ARPGPlayerController::PlayerTick(float DeltaTime)
+void ARPGPlayerController::Tick(float DeltaSeconds)
 {
-	Super::PlayerTick(DeltaTime);
-	
+	Super::Tick(DeltaSeconds);
 }
-
 void ARPGPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	if(Subsystem)
 	{
@@ -49,7 +48,10 @@ void ARPGPlayerController::SetupInputComponent()
 		JumpAction,ETriggerEvent::Triggered,this,&ARPGPlayerController::StopJumping);
 
 	EnhancedInputComponent->BindAction(
-	CrouchAction,ETriggerEvent::Triggered,this,&ARPGPlayerController::Crouch);
+		CrouchAction,ETriggerEvent::Triggered,this,&ARPGPlayerController::Crouch);
+
+	EnhancedInputComponent->BindAction(
+		InteractAction,ETriggerEvent::Triggered,this,&ARPGPlayerController::Interact);
 	
 }
 void ARPGPlayerController::Move(const FInputActionValue& Value)
@@ -101,3 +103,5 @@ void ARPGPlayerController::Crouch(const FInputActionValue& Value)
 void ARPGPlayerController::Interact(const FInputActionValue& Value)
 {
 }
+
+

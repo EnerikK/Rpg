@@ -16,12 +16,21 @@ public:
 	ARPGCharacterBase();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION(BlueprintCallable)
+	void OpenLobby();
+	
+	UFUNCTION(BlueprintCallable)
+	void CallOpenLevel(const FString& Address);
+
+	UFUNCTION(BlueprintCallable)
+	void CallClientTravel(const FString& Address);
+
 protected:
 	
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Combat")
-	TObjectPtr<USkeletalMeshComponent> Weapon;
+	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
 
 	UPROPERTY(EditAnywhere,Category="Combat")
 	FName WeaponTipSocketName;

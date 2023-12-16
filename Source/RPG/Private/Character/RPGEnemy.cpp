@@ -2,8 +2,6 @@
 
 
 #include "Character/RPGEnemy.h"
-
-#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 ARPGEnemy::ARPGEnemy()
@@ -14,10 +12,6 @@ ARPGEnemy::ARPGEnemy()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
-
-
-	/*HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
-	HealthBar->SetupAttachment(GetRootComponent());*/
 
 	BaseWalkSpeed = 250.f;
 }
