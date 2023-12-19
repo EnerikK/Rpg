@@ -2,10 +2,12 @@
 
 
 #include "Weapons/WeaponsBase.h"
+
+#include "SaoGameplayTags.h"
 #include "Character/RPGCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
-
+#include "Net/UnrealNetwork.h"
 
 
 AWeaponsBase::AWeaponsBase()
@@ -15,8 +17,7 @@ AWeaponsBase::AWeaponsBase()
 	
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	SetRootComponent(WeaponMesh);
-
-
+	
 	WeaponMesh->SetCollisionResponseToAllChannels(ECR_Block);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn,ECR_Ignore);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -28,6 +29,8 @@ AWeaponsBase::AWeaponsBase()
 
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
 	PickUpWidget->SetupAttachment(RootComponent);
+
+	
 	
 }
 void AWeaponsBase::BeginPlay()
@@ -45,10 +48,16 @@ void AWeaponsBase::BeginPlay()
 	{
 		PickUpWidget->SetVisibility(false);
 	}
+}
+void AWeaponsBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	
+	DOREPLIFETIME(AWeaponsBase,WeaponState);
+	DOREPLIFETIME(AWeaponsBase,WeaponType);
 	
 }
+
 void AWeaponsBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -76,6 +85,50 @@ void AWeaponsBase::OnSphereEndOverlap(UPrimitiveComponent* OverlapComponent, AAc
 	
 }
 
+void AWeaponsBase::SetWeaponState(EWeaponState State)
+{
+	WeaponState = State;
+	switch (WeaponState)
+	{
+		case EWeaponState::EW_Equipped:
+			ShowPickUpWidget(false);
+			GetPickUpSphere()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
+	}
+
+	
+}
+
+void AWeaponsBase::GetWeaponType(EWeaponType Type)
+{
+	WeaponType = Type;
+	WeaponType = EWeaponType::EW_GreatSword;
+	
+}
+
+void AWeaponsBase::OnRep_WeaponState()
+{
+	switch (WeaponState)
+	{
+		case EWeaponState::EW_Equipped:
+			ShowPickUpWidget(false);
+			PickUpSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
+	}
+	
+}
+
+void AWeaponsBase::OnRep_WeaponType()
+{
+	switch (WeaponType)
+	{
+		case EWeaponType::EW_GreatSword:
+			
+		break;
+	}
+	
+}
+
 void AWeaponsBase::ShowPickUpWidget(bool bShowWidget)
 {
 	if(PickUpWidget)
@@ -83,4 +136,5 @@ void AWeaponsBase::ShowPickUpWidget(bool bShowWidget)
 		PickUpWidget->SetVisibility(bShowWidget);
 	}
 }
+
 

@@ -7,6 +7,7 @@
 #include "Character/RPGCharacterBase.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/InputComponent.h"
+#include "Weapons/WeaponsBase.h"
 #include "RPGCharacter.generated.h"
 
 class UCombatComponent;
@@ -34,9 +35,14 @@ public:
 
 	void SetOverlappingWeapon(AWeaponsBase* Weapon);
 
+	bool IsAttacking();
+	bool IsWeaponEquipped();
+
 protected:
 
 	void EquipButtonPressed();
+	void AttackButtonPressed();
+	void CrouchButtonPressed();
 
 private:
 
@@ -49,11 +55,17 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	AWeaponsBase* OverlappingWeapon;
 
+	UPROPERTY()
+	FSaoGameplayTags& GameplayTags;
+	
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeaponsBase* LastWeapon);
 	
 	UPROPERTY(VisibleAnywhere)
 	UCombatComponent* CombatComponent;
+	
+	UFUNCTION(Server,Reliable)
+	void ServerEquipButtonPressed();
 
 	
 	

@@ -69,7 +69,6 @@ void ARPGPlayerController::Move(const FInputActionValue& Value)
 		ControlledPawn->AddMovementInput(RightVector,MoveVector.X);
 	}
 }
-
 void ARPGPlayerController::Look(const FInputActionValue& Value)
 {
 	const FVector2D LookAxisVector = Value.Get<FVector2D>();
@@ -80,18 +79,14 @@ void ARPGPlayerController::Look(const FInputActionValue& Value)
 			ControlledPawn->AddControllerPitchInput(LookAxisVector.Y);
 		
 	}
-
 }
-
 void ARPGPlayerController::Jump(const FInputActionValue& Value)
 {
 	if(ACharacter* ControlledCharacter = GetPawn<ACharacter>())
 	{
 		ControlledCharacter->Jump();
 	}
-	
 }
-
 void ARPGPlayerController::StopJumping(const FInputActionValue& Value)
 {
 }

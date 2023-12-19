@@ -2,6 +2,9 @@
 
 
 #include "Character/RPGCharacter.h"
+
+#include "NativeGameplayTags.h"
+#include "SaoGameplayTags.h"
 #include "Components/CombatComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -38,6 +41,9 @@ void ARPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("EquipButtonPressed",IE_Pressed,this,&ARPGCharacter::EquipButtonPressed);
+	PlayerInputComponent->BindAction("Attack",IE_Pressed,this,&ARPGCharacter::AttackButtonPressed);
+	PlayerInputComponent->BindAction("Crouch",IE_Pressed,this,&ARPGCharacter::CrouchButtonPressed);
+
 }
 
 void ARPGCharacter::BeginPlay()
@@ -79,6 +85,16 @@ void ARPGCharacter::SetOverlappingWeapon(AWeaponsBase* Weapon)
 	
 }
 
+bool ARPGCharacter::IsAttacking()
+{
+	return (CombatComponent && CombatComponent->bAttacking);
+}
+
+bool ARPGCharacter::IsWeaponEquipped()
+{
+	return (CombatComponent && CombatComponent->EquippedWeapon);
+}
+
 void ARPGCharacter::OnRep_OverlappingWeapon(AWeaponsBase* LastWeapon)
 {
 	if(OverlappingWeapon)
@@ -92,12 +108,44 @@ void ARPGCharacter::OnRep_OverlappingWeapon(AWeaponsBase* LastWeapon)
 	}
 }
 
-void ARPGCharacter::EquipButtonPressed()
+void ARPGCharacter::ServerEquipButtonPressed_Implementation()
 {
-	if(CombatComponent && HasAuthority())
+	if(CombatComponent)
 	{
 		CombatComponent->EquipWeapon(OverlappingWeapon);
 	}
+		
+	
+}
+
+void ARPGCharacter::EquipButtonPressed()
+{
+	if(CombatComponent )
+	{
+		if(HasAuthority())
+		{
+			CombatComponent->EquipWeapon(OverlappingWeapon);
+			
+			
+		}
+		else
+		{
+			ServerEquipButtonPressed();
+		}
+		
+	}
+}
+
+void ARPGCharacter::AttackButtonPressed()
+{
+	
+	
+}
+
+void ARPGCharacter::CrouchButtonPressed()
+{
+	Crouch();
+	
 }
 
 void ARPGCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

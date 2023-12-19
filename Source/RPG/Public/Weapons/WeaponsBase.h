@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SaoGameplayTags.h"
 #include "GameFramework/Actor.h"
 #include "WeaponsBase.generated.h"
 
@@ -19,6 +20,15 @@ enum class EWeaponState : uint8
 	EW_MAX		UMETA(DisplayName = "DefaultMax")
 	
 };
+UENUM(BlueprintType)
+enum class EWeaponType : uint8
+{
+	EW_GreatSword UMETA(DisplayName = "GreatSword"),
+	EW_Daggers	  UMETA(DisplayName = "Daggers"),
+	EW_Spear	  UMETA(DisplayName = "Spear"),
+	EW_Staff	  UMETA(DisplayName = "Staff"),
+};
+
 
 
 UCLASS()
@@ -31,8 +41,14 @@ public:
 	AWeaponsBase();
 	virtual void Tick(float DeltaTime) override;
 	void ShowPickUpWidget(bool bShowWidget);
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
+	void SetWeaponState(EWeaponState State);
+	void GetWeaponType(EWeaponType Type);
+	FORCEINLINE USphereComponent* GetPickUpSphere() const {return PickUpSphere;}
 
-	FORCEINLINE void SetWeaponState(EWeaponState State) {WeaponState = State;}
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,AdvancedDisplay,Category="Tags")
+	TArray<FName> Tag;
 	
 
 protected:
@@ -64,10 +80,26 @@ private:
 	UPROPERTY(VisibleAnywhere,Category= "Weapon Properties")
 	USphereComponent* PickUpSphere;
 
-	UPROPERTY(VisibleAnywhere,Category= "Weapon Properties")
+	UPROPERTY(ReplicatedUsing= OnRep_WeaponState,VisibleAnywhere,Category= "Weapon Properties")
 	EWeaponState WeaponState;
+
+	UPROPERTY(ReplicatedUsing= OnRep_WeaponType,EditDefaultsOnly,Category= "Weapon Properties")
+	EWeaponType WeaponType;
+
+	FSaoGameplayTags* GameplayTags;
+
+
+
+	UFUNCTION()
+	void OnRep_WeaponState();
+
+	UFUNCTION()
+	void OnRep_WeaponType();
 
 	UPROPERTY(VisibleAnywhere,Category= "Weapon Properties")
 	UWidgetComponent* PickUpWidget;
 
 };
+
+
+
