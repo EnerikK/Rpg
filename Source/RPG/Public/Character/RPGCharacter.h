@@ -54,9 +54,6 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	AWeaponsBase* OverlappingWeapon;
-
-	UPROPERTY()
-	FSaoGameplayTags& GameplayTags;
 	
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeaponsBase* LastWeapon);

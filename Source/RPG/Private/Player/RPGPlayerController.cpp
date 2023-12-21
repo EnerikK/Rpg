@@ -4,8 +4,9 @@
 #include "Player/RPGPlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "Components/CombatComponent.h"
+#include "GameFramework/Controller.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/Pawn.h"
 
 
 ARPGPlayerController::ARPGPlayerController()
@@ -56,28 +57,53 @@ void ARPGPlayerController::SetupInputComponent()
 }
 void ARPGPlayerController::Move(const FInputActionValue& Value)
 {
-	const FVector2D MoveVector = Value.Get<FVector2d>();
-	const FRotator Rotation = GetControlRotation();
-	const FRotator YawRotation(0,Rotation.Yaw,0);
-
-	const FVector ForwardVector = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	const FVector RightVector = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-	if(APawn* ControlledPawn = GetPawn<APawn>())
+	// input is a Vector2D
+	FVector2D MovementVector = Value.Get<FVector2D>();
+	APawn* ControlledPawn = GetPawn<APawn>();
+	
+	if (ControlledPawn != nullptr)
 	{
-		ControlledPawn->AddMovementInput(ForwardVector,MoveVector.Y);
-		ControlledPawn->AddMovementInput(RightVector,MoveVector.X);
+		const FVector2D MoveValue = Value.Get<FVector2D>();
+		const FRotator MovementRotation(0, ControlledPawn->GetControlRotation().Yaw, 0);
+ 
+		// Forward/Backward direction
+		if (MoveValue.Y != 0.f)
+		{
+			// Get forward vector
+			const FVector Direction = MovementRotation.RotateVector(FVector::ForwardVector);
+
+			
+			ControlledPawn->AddMovementInput(Direction, MoveValue.Y);
+		}
+ 
+		// Right/Left direction
+		if (MoveValue.X != 0.f)
+		{
+			// Get right vector
+			const FVector Direction = MovementRotation.RotateVector(FVector::RightVector);
+ 
+			ControlledPawn->AddMovementInput(Direction, MoveValue.X);
+		}
 	}
 }
 void ARPGPlayerController::Look(const FInputActionValue& Value)
 {
-	const FVector2D LookAxisVector = Value.Get<FVector2D>();
-	if(APawn* ControlledPawn = GetPawn<APawn>())
+	APawn* ControlledPawn = GetPawn<APawn>();
+	
+	if (ControlledPawn->Controller != nullptr)
 	{
-			// add yaw and pitch input to controller
-			ControlledPawn->AddControllerYawInput(LookAxisVector.X);
-			ControlledPawn->AddControllerPitchInput(LookAxisVector.Y);
-		
+		const FVector2D LookValue = Value.Get<FVector2D>();
+ 
+		if (LookValue.X != 0.f)
+		{
+			ControlledPawn->AddControllerYawInput(LookValue.X);
+			
+		}
+ 
+		if (LookValue.Y != 0.f)
+		{
+			ControlledPawn->AddControllerPitchInput(LookValue.Y);
+		}
 	}
 }
 void ARPGPlayerController::Jump(const FInputActionValue& Value)
