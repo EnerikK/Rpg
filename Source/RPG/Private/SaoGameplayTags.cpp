@@ -25,5 +25,11 @@ void FSaoGameplayTags::InitializeNativeGameplayTags()
 		FName("Weapon.Staff"),
 		FString("Tag for Staff"));
 	/*WeaponTags End*/
+
+
+	/*PlayerTags*/
 	
+	GameplayTags.Player_Block_Cursor_Trace = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Player.Block.Cursor.Trace"),
+		FString("Block the trace under the cursor"));
 }

@@ -3,9 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputActionValue.h"
+#include "AbilitySystem/SaoAbilitySystemComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "RPGPlayerController.generated.h"
 
+class IEnemyInterface;
 class UCombatComponent;
 struct FInputActionValue;
 class UInputMappingContext;
@@ -30,6 +33,10 @@ protected:
 	virtual void SetupInputComponent() override;
 
 private:
+
+	IEnemyInterface* LastActor;
+	IEnemyInterface* ThisActor;
+	FHitResult CursorHit;
 	
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> PlayerContext;
@@ -49,11 +56,22 @@ private:
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> InteractAction;
 
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> ShowCursor;
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Jump(const FInputActionValue& Value);
 	void StopJumping(const FInputActionValue& Value);
 	void Crouch(const FInputActionValue& Value);
 	void Interact(const FInputActionValue& Value);
+	void EnableCursor(const FInputActionValue& Value);
+
+	void CursorTrace();
+
+	UPROPERTY()
+	TObjectPtr<USaoAbilitySystemComponent> SaoAbilitySystemComponent;
+	
+	USaoAbilitySystemComponent* GetASC();
 	
 };

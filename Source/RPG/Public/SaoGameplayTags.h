@@ -26,6 +26,10 @@ public:
 	FGameplayTag Weapon_Daggers;
 	FGameplayTag Weapon_Spear;
 	FGameplayTag Weapon_Staff;
+
+
+	/*PlayerTags*/
+	FGameplayTag Player_Block_Cursor_Trace;
  
 
 

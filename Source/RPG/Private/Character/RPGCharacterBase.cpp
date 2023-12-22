@@ -3,6 +3,7 @@
 
 #include "Character/RPGCharacterBase.h"
 
+#include "SaoGameplayTags.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -11,6 +12,8 @@ ARPGCharacterBase::ARPGCharacterBase()
 {
  	
 	PrimaryActorTick.bCanEverTick = true;
+
+	const FSaoGameplayTags& GameplayTags = FSaoGameplayTags::Get();
 
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera,ECR_Ignore);
@@ -53,9 +56,14 @@ void ARPGCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
+
 void ARPGCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void ARPGCharacterBase::InitAbilityActorInfo()
+{
 }
 

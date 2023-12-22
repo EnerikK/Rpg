@@ -37,12 +37,15 @@ public:
 
 	bool IsAttacking();
 	bool IsWeaponEquipped();
+	bool IsAiming();
 
 protected:
 
 	void EquipButtonPressed();
 	void AttackButtonPressed();
 	void CrouchButtonPressed();
+	void AimButtonPressed();
+	void AimButtonReleased();
 
 private:
 
@@ -63,6 +66,8 @@ private:
 	
 	UFUNCTION(Server,Reliable)
 	void ServerEquipButtonPressed();
+
+	
 
 	
 	

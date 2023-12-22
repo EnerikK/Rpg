@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Weapons/WeaponsBase.h"
 #include "CombatComponent.generated.h"
 
 
@@ -32,8 +33,15 @@ private:
 
 	bool bAttacking;
 
+	UPROPERTY(Replicated)
+	bool bAiming;
+
 protected:
 	
 	virtual void BeginPlay() override;
+	void SetAiming(bool bIsAiming);
+
+	UFUNCTION(Server,Reliable)
+	void ServerSetAiming(bool bIsAiming);
 	
 };

@@ -11,14 +11,22 @@
 
 UCombatComponent::UCombatComponent()
 {
-
 	PrimaryComponentTick.bCanEverTick = false;
-	
 }
 void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+void UCombatComponent::SetAiming(bool bIsAiming)
+{
+	bAiming = bIsAiming;
+	ServerSetAiming(bIsAiming);
+}
+
+void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
+{
+	bAiming = bIsAiming;
 }
 
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -32,6 +40,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UCombatComponent,EquippedWeapon);
+	DOREPLIFETIME(UCombatComponent,bAiming);
 	
 }
 
@@ -39,23 +48,13 @@ void UCombatComponent::EquipWeapon(AWeaponsBase* WeaponToEquip)
 {
 	if(Character == nullptr || WeaponToEquip == nullptr) return;
 	
-	/*EWeaponType Weapon = EWeaponType::EW_GreatSword;
-	if(EquippedWeapon->GetWeaponType())
-	{*/
-		EquippedWeapon = WeaponToEquip;
-		EquippedWeapon->SetWeaponState(EWeaponState::EW_Equipped);
-		const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocketName"));
-		if(HandSocket)
-		{
-			HandSocket->AttachActor(EquippedWeapon,Character->GetMesh());
-		}
-		EquippedWeapon->SetOwner(Character);
-	/*}
-	else
+	EquippedWeapon = WeaponToEquip;
+	EquippedWeapon->SetWeaponState(EWeaponState::EW_Equipped);
+	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocketName"));
+	if(HandSocket)
 	{
-		UE_LOG(LogTemp,Error,TEXT("Its a dagger"))
-	}*/
-	
-
+		HandSocket->AttachActor(EquippedWeapon,Character->GetMesh());
+	}
+	EquippedWeapon->SetOwner(Character);
 }
 

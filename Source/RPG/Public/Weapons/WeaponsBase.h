@@ -44,7 +44,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	void SetWeaponState(EWeaponState State);
-	void GetWeaponType(EWeaponType Type);
+	void SetWeaponType(EWeaponType Type);
 	FORCEINLINE USphereComponent* GetPickUpSphere() const {return PickUpSphere;}
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,AdvancedDisplay,Category="Tags")

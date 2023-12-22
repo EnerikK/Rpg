@@ -2,9 +2,6 @@
 
 
 #include "Character/RPGCharacter.h"
-
-#include "NativeGameplayTags.h"
-#include "SaoGameplayTags.h"
 #include "Components/CombatComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -36,6 +33,8 @@ ARPGCharacter::ARPGCharacter()
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	CombatComponent->SetIsReplicated(true);
 
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+
 }
 
 void ARPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -45,6 +44,8 @@ void ARPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("EquipButtonPressed",IE_Pressed,this,&ARPGCharacter::EquipButtonPressed);
 	PlayerInputComponent->BindAction("Attack",IE_Pressed,this,&ARPGCharacter::AttackButtonPressed);
 	PlayerInputComponent->BindAction("Crouch",IE_Pressed,this,&ARPGCharacter::CrouchButtonPressed);
+	PlayerInputComponent->BindAction("Aim",IE_Pressed,this,&ARPGCharacter::AimButtonPressed);
+	PlayerInputComponent->BindAction("Aim",IE_Released,this,&ARPGCharacter::AimButtonReleased);
 
 }
 
@@ -73,7 +74,6 @@ void ARPGCharacter::SetOverlappingWeapon(AWeaponsBase* Weapon)
 	if(OverlappingWeapon)
 	{
 		OverlappingWeapon->ShowPickUpWidget(false);
-		
 	}
 	OverlappingWeapon = Weapon;
 	if(IsLocallyControlled())
@@ -81,12 +81,9 @@ void ARPGCharacter::SetOverlappingWeapon(AWeaponsBase* Weapon)
 		if(OverlappingWeapon)
 		{
 			OverlappingWeapon->ShowPickUpWidget(true);
-		
 		}
 	}
-	
 }
-
 bool ARPGCharacter::IsAttacking()
 {
 	return (CombatComponent && CombatComponent->bAttacking);
@@ -95,6 +92,11 @@ bool ARPGCharacter::IsAttacking()
 bool ARPGCharacter::IsWeaponEquipped()
 {
 	return (CombatComponent && CombatComponent->EquippedWeapon);
+}
+
+bool ARPGCharacter::IsAiming()
+{
+	return (CombatComponent && CombatComponent->bAiming);
 }
 
 void ARPGCharacter::OnRep_OverlappingWeapon(AWeaponsBase* LastWeapon)
@@ -116,53 +118,60 @@ void ARPGCharacter::ServerEquipButtonPressed_Implementation()
 	{
 		CombatComponent->EquipWeapon(OverlappingWeapon);
 	}
-		
-	
 }
-
 void ARPGCharacter::EquipButtonPressed()
 {
-	if(CombatComponent )
+	if(CombatComponent)
 	{
 		if(HasAuthority())
 		{
 			CombatComponent->EquipWeapon(OverlappingWeapon);
-			
-			
 		}
 		else
 		{
 			ServerEquipButtonPressed();
 		}
-		
 	}
 }
 
 void ARPGCharacter::AttackButtonPressed()
 {
 	
-	
 }
-
 void ARPGCharacter::CrouchButtonPressed()
 {
-	Crouch();
-	
+	if(bIsCrouched)
+	{
+		UnCrouch();
+	}
+	else
+	{
+		Crouch();
+	}
 }
-
+void ARPGCharacter::AimButtonPressed()
+{
+	if(CombatComponent)
+	{
+		CombatComponent->SetAiming(true);
+	}
+}
+void ARPGCharacter::AimButtonReleased()
+{
+	if(CombatComponent)
+	{
+		CombatComponent->SetAiming(false);
+	}
+}
 void ARPGCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME_CONDITION(ARPGCharacter,OverlappingWeapon,COND_OwnerOnly);
 }
-
-
-
 void ARPGCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 }
-
 void ARPGCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();

@@ -30,6 +30,7 @@ AWeaponsBase::AWeaponsBase()
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
 	PickUpWidget->SetupAttachment(RootComponent);
 
+	WeaponType = EWeaponType::EW_Daggers;
 	
 	
 }
@@ -48,6 +49,7 @@ void AWeaponsBase::BeginPlay()
 	{
 		PickUpWidget->SetVisibility(false);
 	}
+	
 }
 void AWeaponsBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -99,10 +101,10 @@ void AWeaponsBase::SetWeaponState(EWeaponState State)
 	
 }
 
-void AWeaponsBase::GetWeaponType(EWeaponType Type)
+void AWeaponsBase::SetWeaponType(EWeaponType Type)
 {
 	WeaponType = Type;
-	WeaponType = EWeaponType::EW_GreatSword;
+	WeaponType = EWeaponType::EW_Daggers;
 	
 }
 
